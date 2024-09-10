@@ -2,44 +2,34 @@ import { Request, Response } from "express";
 import { FileService } from "./file.services";
 
 export class FileController {
-  static async uploadFile(req: Request, res: Response): Promise<void> {
+  static async uploadFile(req: Request, res: Response): Promise<Response> {
     try {
-      const file = req.file as Express.Multer.File; // Cast to Express.Multer.File
+      const file = req.file as Express.Multer.File;
       if (!file) {
-        res.status(400).json({ message: "No file uploaded" });
-        return;
+        return res.status(400).json({ message: "No file uploaded" });
       }
 
-      // Call the service with the uploaded file
       await FileService.uploadAndConvertFile(file);
-      res
+      return res
         .status(201)
         .json({ message: "File uploaded and converted successfully!" });
-    } catch (error: unknown) {
-      // Handle unknown error
-      if (error instanceof Error) {
-        res
-          .status(500)
-          .json({ message: "Error uploading file", error: error.message });
-      } else {
-        res.status(500).json({ message: "Unknown error occurred" });
-      }
+    } catch (error) {
+      return res.status(500).json({
+        message: "Error uploading file",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
     }
   }
 
-  static async getAllFiles(req: Request, res: Response): Promise<void> {
+  static async getAllFiles(req: Request, res: Response): Promise<Response> {
     try {
       const files = await FileService.getAllFiles();
-      res.status(200).json(files);
-    } catch (error: unknown) {
-      // Handle unknown error
-      if (error instanceof Error) {
-        res
-          .status(500)
-          .json({ message: "Error retrieving files", error: error.message });
-      } else {
-        res.status(500).json({ message: "Unknown error occurred" });
-      }
+      return res.status(200).json({ files });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Error retrieving files",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
     }
   }
 }

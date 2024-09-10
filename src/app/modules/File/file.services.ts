@@ -1,33 +1,53 @@
-import * as mammoth from "mammoth";
-import fs from "fs";
+import fs from "fs/promises";
 import path from "path";
+import mammoth from "mammoth";
 import { File } from "./file.model";
 
-export class FileService {
-  //!1 UPLOAD TO DB
-  static async uploadAndConvertFile(file: Express.Multer.File): Promise<void> {
-    // Define the storage path
-    const uploadPath = path.join(__dirname, "../../uploads", file.filename);
-
-    // The file will already be uploaded by Multer, no need to move it.
-    // Read the uploaded .docx file
-    const fileBuffer = fs.readFileSync(uploadPath);
-
-    // Convert .docx to HTML using Mammoth
-    const result = await mammoth.convertToHtml({ buffer: fileBuffer });
-    const htmlContent = result.value;
-
-    // Store the file metadata and HTML in MongoDB
-    const fileDoc = new File({
-      fileName: file.originalname,
-      filePath: uploadPath,
-      htmlContent: htmlContent,
-    });
-
-    await fileDoc.save();
+// Function to convert DOCX to HTML using mammoth
+async function convertDocxToHtml(buffer: Buffer): Promise<string> {
+  try {
+    const result = await mammoth.convertToHtml({ buffer });
+    return result.value; // Return the HTML content
+  } catch (error) {
+    console.error("Error converting DOCX to HTML:", error);
+    throw new Error("Conversion failed.");
   }
-  //!2 GET FILES
+}
+
+export class FileService {
+  static async uploadAndConvertFile(file: Express.Multer.File): Promise<void> {
+    try {
+      const uploadPath = path.resolve(
+        __dirname,
+        "../../../../uploads",
+        file.filename
+      );
+      const fileBuffer = await fs.readFile(uploadPath);
+
+      // Convert DOCX to HTML
+      const htmlContent = await convertDocxToHtml(fileBuffer);
+
+      const fileDoc = new File({
+        fileName: file.originalname,
+        filePath: uploadPath,
+        htmlContent,
+        uploadDate: new Date(),
+      });
+
+      await fileDoc.save();
+      await fs.unlink(uploadPath);
+    } catch (error) {
+      console.error("Error uploading or converting file:", error);
+      throw new Error("Failed to upload and convert file.");
+    }
+  }
+
   static async getAllFiles() {
-    return File.find({});
+    try {
+      return await File.find({});
+    } catch (error) {
+      console.error("Error retrieving files:", error);
+      throw new Error("Failed to retrieve files.");
+    }
   }
 }

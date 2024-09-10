@@ -2,13 +2,31 @@ import express from "express";
 import multer from "multer";
 import { FileController } from "./file.controller";
 
-// Configure Multer to store files in the 'uploads/' directory
+// Configure Multer to handle file uploads
 const upload = multer({ dest: "uploads/" });
-//router
+
 const router = express.Router();
 
-// Use Multer's single file upload middleware
-router.post("/upload", upload.single("file"), FileController.uploadFile);
-router.get("/files", FileController.getAllFiles);
+router.post("/upload", upload.single("file"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    await FileController.uploadFile(req, res);
+  } catch (error) {
+    console.error("Upload Error:", error);
+    res.status(500).json({ message: "Error processing request", error });
+  }
+});
+
+router.get("/files", async (req, res) => {
+  try {
+    await FileController.getAllFiles(req, res);
+  } catch (error) {
+    console.error("Retrieve Files Error:", error);
+    res.status(500).json({ message: "Error retrieving files", error });
+  }
+});
 
 export const FileRoutes = router;

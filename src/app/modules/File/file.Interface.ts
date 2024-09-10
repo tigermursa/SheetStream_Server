@@ -3,4 +3,5 @@ export interface IFile {
     filePath: string;
     htmlContent?: string;
     uploadDate: Date;
-}
+  }
+  

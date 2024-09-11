@@ -1,96 +1,126 @@
 import { Request, Response } from "express";
-import { FileService } from "./file.services";
+import {
+  deleteFile,
+  getAllFiles,
+  getFileById,
+  updateFileContent,
+  uploadAndConvertFile,
+} from "./file.services";
 
-export class FileController {
-  // File upload
-  static async uploadFile(req: Request, res: Response): Promise<Response> {
-    try {
-      const file = req.file as Express.Multer.File;
+const uploadFile = async (req: Request, res: Response) => {
+  try {
+    const file = req.file as Express.Multer.File;
 
-      if (!file) return res.status(400).json({ message: "No file uploaded" });
-      if (!file.mimetype.includes("officedocument.wordprocessingml")) {
-        return res.status(400).json({ message: "Only DOCX files are allowed" });
-      }
+    if (!file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+    if (!file.mimetype.includes("officedocument.wordprocessingml")) {
+      return res.status(400).json({ message: "Only DOCX files are allowed" });
+    }
 
-      await FileService.uploadAndConvertFile(file);
+    await uploadAndConvertFile(file);
+    return res
+      .status(201)
+      .json({ message: "File uploaded and converted successfully!" });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    return res.status(500).json({
+      message: "Error uploading and converting file",
+      error: errorMessage,
+    });
+  }
+};
+
+const getAllFilesController = async (req: Request, res: Response) => {
+  try {
+    const files = await getAllFiles();
+    return res
+      .status(200)
+      .json({ message: "Files retrieved successfully", data: files });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    return res
+      .status(500)
+      .json({ message: "Error retrieving files", error: errorMessage });
+  }
+};
+
+const updateFileController = async (req: Request, res: Response) => {
+  try {
+    const fileId = req.params.id;
+    const { htmlContent } = req.body;
+
+    if (!htmlContent) {
+      return res.status(400).json({ message: "HTML content is required" });
+    }
+
+    const updated = await updateFileContent(fileId, htmlContent);
+    if (!updated) {
       return res
-        .status(201)
-        .json({ message: "File uploaded and converted successfully!" });
-    } catch (error) {
-      return res.status(500).json({
-        message: "Error uploading and converting file",
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
+        .status(404)
+        .json({ message: `No file found with ID: ${fileId}` });
     }
+
+    return res
+      .status(200)
+      .json({ message: "File content updated successfully" });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    return res
+      .status(500)
+      .json({ message: "Error updating file content", error: errorMessage });
   }
+};
 
-  // Get all files
-  static async getAllFiles(req: Request, res: Response): Promise<Response> {
-    try {
-      const files = await FileService.getAllFiles();
-      return res.status(200).json({ files });
-    } catch (error) {
-      return res.status(500).json({
-        message: "Error retrieving files",
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
-    }
-  }
+const getFileController = async (req: Request, res: Response) => {
+  try {
+    const fileId = req.params.id;
+    const file = await getFileById(fileId);
 
-  // Update file
-  static async updateFile(req: Request, res: Response): Promise<Response> {
-    try {
-      const fileId = req.params.id;
-      const { htmlContent } = req.body;
-
-      if (!htmlContent)
-        return res.status(400).json({ message: "HTML content is required" });
-
-      const updated = await FileService.updateFileContent(fileId, htmlContent);
-      if (!updated) return res.status(404).json({ message: "File not found" });
-
+    if (!file) {
       return res
-        .status(200)
-        .json({ message: "File content updated successfully" });
-    } catch (error) {
-      return res.status(500).json({
-        message: "Error updating file content",
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
+        .status(404)
+        .json({ message: `No file found with ID: ${fileId}` });
     }
+
+    return res
+      .status(200)
+      .json({ message: "File retrieved successfully", data: file });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    return res
+      .status(500)
+      .json({ message: "Error retrieving file", error: errorMessage });
   }
+};
 
-  // Get a single file
-  static async getFile(req: Request, res: Response): Promise<Response> {
-    try {
-      const fileId = req.params.id;
-      const file = await FileService.getFileById(fileId);
-      if (!file) return res.status(404).json({ message: "File not found" });
+const deleteFileController = async (req: Request, res: Response) => {
+  try {
+    const fileId = req.params.id;
+    const result = await deleteFile(fileId);
 
-      return res.status(200).json({ file });
-    } catch (error) {
-      return res.status(500).json({
-        message: "Error retrieving file",
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
+    if (!result.success) {
+      return res.status(400).json({ message: result.message });
     }
-  }
 
-  // Delete a file
-  static async deleteFile(req: Request, res: Response): Promise<Response> {
-    try {
-      const fileId = req.params.id;
-      const file = await FileService.deleteFile(fileId);
-      if (!file) return res.status(404).json({ message: "File not found" });
-
-      return res
-        .status(200)
-        .json({ message: "File deleted successfully", file });
-    } catch (error) {
-      return res.status(500).json({
-        message: "Error deleting file",
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
-    }
+    return res.status(200).json({ message: result.message });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    return res
+      .status(500)
+      .json({ message: "Error deleting file", error: errorMessage });
   }
-}
+};
+
+export {
+  uploadFile,
+  getAllFilesController,
+  updateFileController,
+  getFileController,
+  deleteFileController,
+};

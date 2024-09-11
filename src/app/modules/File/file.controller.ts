@@ -18,7 +18,7 @@ export class FileController {
         .json({ message: "File uploaded and converted successfully!" });
     } catch (error) {
       return res.status(500).json({
-        message: "Error updating file content",
+        message: "Error uploading and converting file",
         error: error instanceof Error ? error.message : "Unknown error",
       });
     }
@@ -31,7 +31,7 @@ export class FileController {
       return res.status(200).json({ files });
     } catch (error) {
       return res.status(500).json({
-        message: "Error updating file content",
+        message: "Error retrieving files",
         error: error instanceof Error ? error.message : "Unknown error",
       });
     }
@@ -46,7 +46,9 @@ export class FileController {
       if (!htmlContent)
         return res.status(400).json({ message: "HTML content is required" });
 
-      await FileService.updateFileContent(fileId, htmlContent);
+      const updated = await FileService.updateFileContent(fileId, htmlContent);
+      if (!updated) return res.status(404).json({ message: "File not found" });
+
       return res
         .status(200)
         .json({ message: "File content updated successfully" });

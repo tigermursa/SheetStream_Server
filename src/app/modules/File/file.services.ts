@@ -59,14 +59,14 @@ export class FileService {
   static async updateFileContent(
     fileId: string,
     htmlContent: string
-  ): Promise<void> {
+  ): Promise<boolean> {
     try {
       const file = await File.findByIdAndUpdate(
         fileId,
         { htmlContent },
         { new: true }
       );
-      if (!file) throw new Error("File not found");
+      return file !== null;
     } catch (error) {
       console.error("Error updating file content:", error);
       throw new Error("Failed to update file content.");

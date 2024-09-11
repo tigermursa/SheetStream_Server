@@ -50,13 +50,18 @@ const getAllFilesController = async (req: Request, res: Response) => {
 const updateFileController = async (req: Request, res: Response) => {
   try {
     const fileId = req.params.id;
-    const { htmlContent } = req.body;
+    const { htmlContent, imageOne, imageTwo } = req.body;
 
     if (!htmlContent) {
       return res.status(400).json({ message: "HTML content is required" });
     }
 
-    const updated = await updateFileContent(fileId, htmlContent);
+    const updated = await updateFileContent(
+      fileId,
+      htmlContent,
+      imageOne,
+      imageTwo
+    );
     if (!updated) {
       return res
         .status(404)

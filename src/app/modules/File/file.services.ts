@@ -3,6 +3,7 @@ import fs from "fs/promises";
 import path from "path";
 import mammoth from "mammoth";
 import { isValidObjectId } from "mongoose";
+import { IFile } from "./file.Interface";
 
 const convertDocxToHtml = async (buffer: Buffer): Promise<string> => {
   try {
@@ -43,20 +44,29 @@ const uploadAndConvertFile = async (
 
 const getAllFiles = async () => {
   try {
-    return await File.find().select("fileName htmlContent uploadDate");
+    return await File.find().select("fileName htmlContent uploadDate imageOne imageTwo ");
   } catch (error) {
     console.error("Error retrieving files:", error);
     throw new Error("Failed to retrieve files.");
   }
 };
 
-const updateFileContent = async (fileId: string, htmlContent: string) => {
+const updateFileContent = async (
+  fileId: string,
+  htmlContent: string,
+  imageOne?: string,
+  imageTwo?: string
+) => {
   try {
-    const file = await File.findByIdAndUpdate(
-      fileId,
-      { htmlContent },
-      { new: true }
-    );
+    const updateFields: Partial<IFile> = { htmlContent };
+
+    if (imageOne) updateFields.imageOne = imageOne;
+    if (imageTwo) updateFields.imageTwo = imageTwo;
+
+    const file = await File.findByIdAndUpdate(fileId, updateFields, {
+      new: true,
+    });
+
     return file !== null;
   } catch (error) {
     console.error("Error updating file content:", error);

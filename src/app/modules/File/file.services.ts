@@ -3,6 +3,7 @@ import fs from "fs/promises";
 import path from "path";
 import mammoth from "mammoth";
 import { isValidObjectId } from "mongoose";
+import { createBlog } from "../Blogs/blogs.services";
 
 const convertDocxToHtml = async (buffer: Buffer): Promise<string> => {
   try {
@@ -15,7 +16,10 @@ const convertDocxToHtml = async (buffer: Buffer): Promise<string> => {
 };
 
 const uploadAndConvertFile = async (
-  file: Express.Multer.File
+  file: Express.Multer.File,
+  blogTitle?: string, // Optional title for the blog
+  imageOne?: string,
+  imageTwo?: string
 ): Promise<void> => {
   const uploadPath = path.resolve(
     __dirname,
@@ -33,6 +37,9 @@ const uploadAndConvertFile = async (
       htmlContent,
     });
     await fileDoc.save();
+
+    //! Create a blog associated with the uploaded file
+    await createBlog(fileDoc._id as any, imageOne, imageTwo);
 
     await fs.unlink(uploadPath);
   } catch (error) {

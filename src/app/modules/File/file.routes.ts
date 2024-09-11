@@ -29,6 +29,25 @@ router.get("/files", async (req, res) => {
   }
 });
 
+// Get a single file
+router.get("/single/:id", async (req, res) => {
+  try {
+    await FileController.getFile(req, res);
+  } catch (error) {
+    console.error("Get File Error:", error);
+    res.status(500).json({ message: "Error retrieving file", error });
+  }
+});
+
+router.delete("/delete/:id", async (req, res) => {
+  try {
+    await FileController.deleteFile(req, res);
+  } catch (error) {
+    console.error("Delete File Error:", error);
+    res.status(500).json({ message: "Error deleting file", error });
+  }
+});
+
 router.post("/update/:id", async (req, res) => {
   try {
     await FileController.updateFile(req, res);

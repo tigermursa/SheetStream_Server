@@ -72,4 +72,28 @@ export class FileService {
       throw new Error("Failed to update file content.");
     }
   }
+
+  // Retrieve a single file by ID
+  static async getFileById(fileId: string) {
+    try {
+      return await File.findById(fileId);
+    } catch (error) {
+      console.error("Error retrieving file:", error);
+      throw new Error("Failed to retrieve file.");
+    }
+  }
+
+  // Delete a file by ID
+  static async deleteFile(fileId: string) {
+    try {
+      const file = await File.findById(fileId);
+      if (!file) return null;
+      await File.findByIdAndDelete(fileId); // Ensure deletion from MongoDB
+      await fs.unlink(file.filePath); // Ensure to delete the file from the filesystem
+      return file;
+    } catch (error) {
+      console.error("Error deleting file:", error);
+      throw new Error("Failed to delete file.");
+    }
+  }
 }

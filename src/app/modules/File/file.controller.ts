@@ -57,4 +57,38 @@ export class FileController {
       });
     }
   }
+
+  // Get a single file
+  static async getFile(req: Request, res: Response): Promise<Response> {
+    try {
+      const fileId = req.params.id;
+      const file = await FileService.getFileById(fileId);
+      if (!file) return res.status(404).json({ message: "File not found" });
+
+      return res.status(200).json({ file });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Error retrieving file",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  }
+
+  // Delete a file
+  static async deleteFile(req: Request, res: Response): Promise<Response> {
+    try {
+      const fileId = req.params.id;
+      const file = await FileService.deleteFile(fileId);
+      if (!file) return res.status(404).json({ message: "File not found" });
+
+      return res
+        .status(200)
+        .json({ message: "File deleted successfully", file });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Error deleting file",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  }
 }

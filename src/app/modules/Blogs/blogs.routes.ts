@@ -9,10 +9,10 @@ import {
 
 const router = express.Router();
 
-router.post("/blogs", createBlogController);
-router.get("/blogs", getAllBlogsController);
+router.post("/create", createBlogController);
+router.get("/get", getAllBlogsController);
 router.get("/blogs/:id", getBlogByIdController);
-router.put("/blogs/:id", updateBlogController);
+router.put("/update/:id", updateBlogController);
 router.delete("/blogs/:id", deleteBlogController);
 
 export const BlogRoutes = router;

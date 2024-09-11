@@ -4,7 +4,7 @@ import { IFile } from "../File/file.Interface";
 export interface IBlog {
   imageOne?: string;
   imageTwo?: string;
-  file: IFile;
+  file?: IFile;
   createdAt: Date;
 }
 

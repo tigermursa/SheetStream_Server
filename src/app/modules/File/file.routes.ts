@@ -29,4 +29,13 @@ router.get("/files", async (req, res) => {
   }
 });
 
+router.post("/update/:id", async (req, res) => {
+  try {
+    await FileController.updateFile(req, res);
+  } catch (error) {
+    console.error("Update File Error:", error);
+    res.status(500).json({ message: "Error updating file", error });
+  }
+});
+
 export const FileRoutes = router;

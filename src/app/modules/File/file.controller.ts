@@ -32,4 +32,23 @@ export class FileController {
       });
     }
   }
+
+  static async updateFile(req: Request, res: Response): Promise<Response> {
+    try {
+      const fileId = req.params.id;
+      const { htmlContent } = req.body;
+
+      if (!fileId || !htmlContent) {
+        return res.status(400).json({ message: "Invalid request data" });
+      }
+
+      await FileService.updateFileContent(fileId, htmlContent);
+      return res.status(200).json({ message: "File content updated successfully" });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Error updating file content",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  }
 }

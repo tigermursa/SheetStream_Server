@@ -1,7 +1,7 @@
+import { File } from "./file.model";
 import fs from "fs/promises";
 import path from "path";
 import mammoth from "mammoth";
-import { File } from "./file.model";
 
 // Function to convert DOCX to HTML using mammoth
 async function convertDocxToHtml(buffer: Buffer): Promise<string> {
@@ -48,6 +48,15 @@ export class FileService {
     } catch (error) {
       console.error("Error retrieving files:", error);
       throw new Error("Failed to retrieve files.");
+    }
+  }
+
+  static async updateFileContent(fileId: string, htmlContent: string): Promise<void> {
+    try {
+      await File.findByIdAndUpdate(fileId, { htmlContent });
+    } catch (error) {
+      console.error("Error updating file content:", error);
+      throw new Error("Failed to update file content.");
     }
   }
 }

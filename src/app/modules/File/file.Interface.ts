@@ -1,7 +1,8 @@
 export interface IFile {
-    fileName: string;
-    filePath: string;
-    htmlContent?: string;
-    uploadDate: Date;
-  }
-  
+  imageOne?: string;
+  imageTwo?: string;
+  fileName: string;
+  filePath: string;
+  htmlContent?: string;
+  uploadDate: Date;
+}

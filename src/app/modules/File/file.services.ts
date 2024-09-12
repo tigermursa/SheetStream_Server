@@ -44,7 +44,7 @@ const uploadAndConvertFile = async (
 
 const getAllFiles = async () => {
   try {
-    return await File.find().select("imageOne  title fileName");
+    return await File.find().select("imageOne  title fileName shortDescription");
   } catch (error) {
     console.error("Error retrieving files:", error);
     throw new Error("Failed to retrieve files.");
@@ -56,7 +56,8 @@ const updateFileContent = async (
   htmlContent: string,
   imageOne?: string,
   imageTwo?: string,
-  title?: string
+  title?: string,
+  shortDescription?: string
 ) => {
   try {
     const updateFields: Partial<IFile> = { htmlContent };
@@ -64,6 +65,7 @@ const updateFileContent = async (
     if (imageOne) updateFields.imageOne = imageOne;
     if (imageTwo) updateFields.imageTwo = imageTwo;
     if (title) updateFields.title = title;
+    if (shortDescription) updateFields.shortDescription = shortDescription;
 
     const file = await File.findByIdAndUpdate(fileId, updateFields, {
       new: true,

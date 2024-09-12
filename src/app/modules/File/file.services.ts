@@ -44,7 +44,9 @@ const uploadAndConvertFile = async (
 
 const getAllFiles = async () => {
   try {
-    return await File.find().select("imageOne  title fileName shortDescription  uploadDate");
+    return await File.find().select(
+      "imageOne  title fileName shortDescription  uploadDate isOnline"
+    );
   } catch (error) {
     console.error("Error retrieving files:", error);
     throw new Error("Failed to retrieve files.");
@@ -57,6 +59,7 @@ const updateFileContent = async (
   imageOne?: string,
   imageTwo?: string,
   title?: string,
+  isOnline?: boolean,
   shortDescription?: string
 ) => {
   try {
@@ -66,6 +69,9 @@ const updateFileContent = async (
     if (imageTwo) updateFields.imageTwo = imageTwo;
     if (title) updateFields.title = title;
     if (shortDescription) updateFields.shortDescription = shortDescription;
+    if (typeof isOnline === "boolean") {
+      updateFields.isOnline = isOnline;
+    }
 
     const file = await File.findByIdAndUpdate(fileId, updateFields, {
       new: true,

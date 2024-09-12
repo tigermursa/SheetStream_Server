@@ -6,6 +6,8 @@ import {
   updateFileContent,
   uploadAndConvertFile,
 } from "./file.services";
+import { isValidObjectId } from "mongoose";
+import { File } from "./file.model";
 
 const uploadFile = async (req: Request, res: Response) => {
   try {
@@ -125,10 +127,46 @@ const deleteFileController = async (req: Request, res: Response) => {
   }
 };
 
+const toggleFileStatusController = async (req: Request, res: Response) => {
+  try {
+    const fileId = req.params.id;
+
+    // Validate if file ID is valid
+    if (!isValidObjectId(fileId)) {
+      return res.status(400).json({ message: "Invalid file ID" });
+    }
+
+    // Find the file and toggle its `isOnline` status
+    const file = await File.findById(fileId);
+
+    if (!file) {
+      return res
+        .status(404)
+        .json({ message: `No file found with ID: ${fileId}` });
+    }
+
+    // Toggle the `isOnline` field
+    file.isOnline = !file.isOnline;
+    await file.save();
+
+    return res.status(200).json({
+      message: "File status updated successfully",
+      data: { isOnline: file.isOnline },
+    });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    return res
+      .status(500)
+      .json({ message: "Error updating file status", error: errorMessage });
+  }
+};
+
 export {
   uploadFile,
   getAllFilesController,
   updateFileController,
   getFileController,
   deleteFileController,
+  toggleFileStatusController,
 };

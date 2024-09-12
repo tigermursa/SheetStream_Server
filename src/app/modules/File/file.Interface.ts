@@ -6,5 +6,6 @@ export interface IFile {
   fileName: string;
   filePath: string;
   htmlContent?: string;
+  isOnline: boolean;
   uploadDate: Date;
 }

@@ -9,6 +9,7 @@ const fileSchema = new Schema<IFile>({
   fileName: { type: String, required: true },
   filePath: { type: String, required: true },
   htmlContent: { type: String, required: true },
+  isOnline: { type: Boolean, required: true, default: false },
   uploadDate: { type: Date, default: Date.now, immutable: true },
 });
 

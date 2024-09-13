@@ -123,6 +123,16 @@ const deleteFile = async (fileId: string) => {
   }
 };
 
+const searchFilesByTitle = async (searchQuery = "") => {
+  try {
+    const regex = new RegExp(`^${searchQuery}`, "i"); // Case-insensitive, starts with
+    return await File.find({ title: { $regex: regex } }).select("_id title");
+  } catch (error) {
+    console.error("Error searching files:", error);
+    throw new Error("Failed to search files.");
+  }
+};
+
 export {
   convertDocxToHtml,
   uploadAndConvertFile,
@@ -130,4 +140,5 @@ export {
   updateFileContent,
   getFileById,
   deleteFile,
+  searchFilesByTitle,
 };

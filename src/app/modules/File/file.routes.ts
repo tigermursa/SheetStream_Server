@@ -4,6 +4,7 @@ import {
   deleteFileController,
   getAllFilesController,
   getFileController,
+  searchFilesController,
   toggleFileStatusController,
   updateFileController,
   uploadFile,
@@ -18,4 +19,6 @@ router.get("/single/:id", getFileController);
 router.delete("/delete/:id", deleteFileController);
 router.post("/update/:id", updateFileController);
 router.patch("/toggle/isOnline/:id", toggleFileStatusController);
+router.get("/search", searchFilesController);
+
 export const FileRoutes = router;

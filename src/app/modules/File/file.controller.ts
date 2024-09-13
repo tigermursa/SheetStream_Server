@@ -3,6 +3,7 @@ import {
   deleteFile,
   getAllFiles,
   getFileById,
+  searchFilesByTitle,
   updateFileContent,
   uploadAndConvertFile,
 } from "./file.services";
@@ -162,6 +163,20 @@ const toggleFileStatusController = async (req: Request, res: Response) => {
   }
 };
 
+const searchFilesController = async (req: Request, res: Response) => {
+  try {
+    const searchQuery = req.query.q || ""; // Get search query from URL query parameters
+    const files = await searchFilesByTitle(searchQuery as string);
+    return res.status(200).json({ message: "Files found", data: files });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    return res
+      .status(500)
+      .json({ message: "Error searching files", error: errorMessage });
+  }
+};
+
 export {
   uploadFile,
   getAllFilesController,
@@ -169,4 +184,5 @@ export {
   getFileController,
   deleteFileController,
   toggleFileStatusController,
+  searchFilesController,
 };

@@ -1,19 +1,17 @@
 export class CustomError extends Error {
   statusCode: number;
+  errorCode: string;
 
-  constructor(message: string, statusCode: number) {
+  constructor(
+    message: string,
+    statusCode: number,
+    errorCode = "UNKNOWN_ERROR"
+  ) {
     super(message);
     this.statusCode = statusCode;
+    this.errorCode = errorCode;
 
-    // name of this error is the same as the class name
-    this.name = this.constructor.name;
-
-    //  the stack trace if not in production
-    if (process.env.NODE_ENV !== "production") {
-      Error.captureStackTrace(this, this.constructor);
-    }
+    // Capture stack trace (optional for cleaner logs)
+    Error.captureStackTrace(this, this.constructor);
   }
 }
-
-//this is using in auth.login
-//this is using in auth.signup

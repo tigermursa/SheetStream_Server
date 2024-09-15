@@ -60,7 +60,7 @@ export async function register(
     // Save the user
     const newUser = await AuthService.createUser(userData);
 
-    // Generate JWT token
+    // Generate JWT token ....
     const token = jwt.sign(
       { id: newUser._id },
       process.env.JWT_SECRET as string,

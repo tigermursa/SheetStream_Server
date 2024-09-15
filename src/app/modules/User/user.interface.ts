@@ -1,14 +1,14 @@
-interface ICountry {
+export interface ICountry {
   countryName: string;
   city: string;
 }
 
 export interface IUser {
-  name: string;
+  userName: string;
   email: string;
   password: string;
   location: ICountry;
   work: string;
-  age: string;
+  age: number;
   gender: "male" | "female" | "others";
 }

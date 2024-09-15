@@ -4,6 +4,7 @@ export interface ICountry {
 }
 
 export interface IUser {
+  [x: string]: any;
   userName: string;
   email: string;
   password: string;

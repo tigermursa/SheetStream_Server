@@ -34,3 +34,8 @@ export const userSchema = z.object({
     required_error: "Gender is required",
   }),
 });
+
+// Function to validate user data
+export const validateUser = (userData: unknown) => {
+  return userSchema.safeParse(userData);
+};

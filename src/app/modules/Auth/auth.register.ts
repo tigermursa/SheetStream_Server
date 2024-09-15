@@ -8,7 +8,7 @@ import { IUser } from "../User/user.interface";
 import bcryptjs from "bcryptjs";
 //Imports Ends _____________________________________________________________
 
-export async function signup(
+export async function register(
   req: Request,
   res: Response,
   next: NextFunction

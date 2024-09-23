@@ -26,6 +26,9 @@ const uploadFile = async (req: Request, res: Response) => {
       .status(201)
       .json({ message: "File uploaded and converted successfully!" });
   } catch (error) {
+    // More detailed logging
+    console.error("Error in uploadFile:", error);
+
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
     return res.status(500).json({

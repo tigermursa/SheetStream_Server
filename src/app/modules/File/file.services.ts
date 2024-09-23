@@ -4,7 +4,9 @@ import path from "path";
 import mammoth from "mammoth";
 import { isValidObjectId } from "mongoose";
 import { IFile } from "./file.Interface";
+import cloudinary from "cloudinary";
 
+// Function to convert DOCX to HTML
 const convertDocxToHtml = async (buffer: Buffer): Promise<string> => {
   try {
     const { value: htmlContent } = await mammoth.convertToHtml({ buffer });
@@ -15,32 +17,36 @@ const convertDocxToHtml = async (buffer: Buffer): Promise<string> => {
   }
 };
 
+// Function to upload and convert the file
 const uploadAndConvertFile = async (
   file: Express.Multer.File
 ): Promise<void> => {
-  const uploadPath = path.resolve(
-    __dirname,
-    "../../../../uploads",
-    file.filename
-  );
-
   try {
-    const fileBuffer = await fs.readFile(uploadPath);
+    const fileBuffer = await fs.readFile(file.path); // Read the uploaded file from multer
     const htmlContent = await convertDocxToHtml(fileBuffer);
 
+    // Upload the file to Cloudinary
+    const cloudinaryResult = await cloudinary.v2.uploader.upload(file.path, {
+      resource_type: "raw", // Use 'raw' for non-image files
+    });
+
+    // Create a new File document with the Cloudinary URL and HTML content
     const fileDoc = new File({
       fileName: file.originalname,
-      filePath: uploadPath,
+      filePath: cloudinaryResult.secure_url, // Use the secure URL from Cloudinary
       htmlContent,
     });
+
     await fileDoc.save();
 
-    await fs.unlink(uploadPath);
+    // Delete the local file if needed
+    await fs.unlink(file.path);
   } catch (error) {
     console.error("Error during file upload and conversion:", error);
     throw new Error("Upload and conversion process failed.");
   }
 };
+
 
 const getAllFiles = async () => {
   try {

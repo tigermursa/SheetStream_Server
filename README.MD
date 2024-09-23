@@ -40,3 +40,7 @@ SheetStream allows users to write blog posts in familiar environments like MS Wo
 
 This project was developed over three days, from September 10 to September 12. Refactoring and optimization are ongoing to enhance performance and usability.
 
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses getStaticProps)
+ƒ  (Dynamic)  server-rendered on demandd

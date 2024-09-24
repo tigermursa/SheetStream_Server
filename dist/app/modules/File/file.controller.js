@@ -55,11 +55,11 @@ exports.getAllFilesController = getAllFilesController;
 const updateFileController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const fileId = req.params.id;
-        const { htmlContent, imageOne, imageTwo, title, shortDescription } = req.body;
+        const { htmlContent, imageOne, imageTwo, title, description } = req.body;
         if (!htmlContent) {
             return res.status(400).json({ message: "HTML content is required" });
         }
-        const updated = yield (0, file_services_1.updateFileContent)(fileId, htmlContent, imageOne, imageTwo, title, shortDescription);
+        const updated = yield (0, file_services_1.updateFileContent)(fileId, htmlContent, imageOne, imageTwo, title, description);
         if (!updated) {
             return res
                 .status(404)

@@ -63,7 +63,7 @@ const uploadAndConvertFile = (file) => __awaiter(void 0, void 0, void 0, functio
 exports.uploadAndConvertFile = uploadAndConvertFile;
 const getAllFiles = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        return yield file_model_1.File.find().select("imageOne  title fileName shortDescription  uploadDate isOnline");
+        return yield file_model_1.File.find().select("imageOne  title description fileName    uploadDate isOnline");
     }
     catch (error) {
         console.error("Error retrieving files:", error);
@@ -71,7 +71,7 @@ const getAllFiles = () => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getAllFiles = getAllFiles;
-const updateFileContent = (fileId, htmlContent, imageOne, imageTwo, title, isOnline, shortDescription) => __awaiter(void 0, void 0, void 0, function* () {
+const updateFileContent = (fileId, htmlContent, imageOne, imageTwo, title, description, isOnline) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const updateFields = { htmlContent };
         if (imageOne)
@@ -80,8 +80,8 @@ const updateFileContent = (fileId, htmlContent, imageOne, imageTwo, title, isOnl
             updateFields.imageTwo = imageTwo;
         if (title)
             updateFields.title = title;
-        if (shortDescription)
-            updateFields.shortDescription = shortDescription;
+        if (description)
+            updateFields.description = description;
         if (typeof isOnline === "boolean") {
             updateFields.isOnline = isOnline;
         }

@@ -13,7 +13,7 @@ router.post("/upload", upload.single("file"), file_controller_1.uploadFile);
 router.get("/files", file_controller_1.getAllFilesController);
 router.get("/single/:id", file_controller_1.getFileController);
 router.delete("/delete/:id", file_controller_1.deleteFileController);
-router.post("/update/:id", file_controller_1.updateFileController);
+router.patch("/update/:id", file_controller_1.updateFileController);
 router.patch("/toggle/isOnline/:id", file_controller_1.toggleFileStatusController);
 router.get("/search", file_controller_1.searchFilesController);
 exports.FileRoutes = router;

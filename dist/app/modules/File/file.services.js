@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.searchFilesByTitle = exports.deleteFile = exports.getFileById = exports.updateFileContent = exports.getAllFiles = exports.uploadAndConvertFile = exports.convertDocxToHtml = void 0;
+const path_1 = __importDefault(require("path"));
 const file_model_1 = require("./file.model");
 const promises_1 = __importDefault(require("fs/promises"));
 const mammoth_1 = __importDefault(require("mammoth"));
@@ -33,7 +34,12 @@ exports.convertDocxToHtml = convertDocxToHtml;
 // Function to upload and convert DOCX to HTML
 const uploadAndConvertFile = (file) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const fileBuffer = yield promises_1.default.readFile(file.path); // Read the uploaded file
+        // Create a temporary path for the uploaded file in /tmp
+        const tempFilePath = path_1.default.join("/tmp", file.originalname);
+        // Move the file to the /tmp directory (assuming file.path points to a location accessible)
+        yield promises_1.default.copyFile(file.path, tempFilePath); // Copy the file to /tmp
+        // Read the uploaded file
+        const fileBuffer = yield promises_1.default.readFile(tempFilePath);
         // Convert DOCX to HTML
         const htmlContent = yield convertDocxToHtml(fileBuffer);
         // Upload the file to Cloudinary
@@ -53,7 +59,7 @@ const uploadAndConvertFile = (file) => __awaiter(void 0, void 0, void 0, functio
         });
         yield fileDoc.save(); // Save the document in the DB
         // Remove the local file after upload
-        yield promises_1.default.unlink(file.path);
+        yield promises_1.default.unlink(tempFilePath); // Clean up the temporary file
     }
     catch (error) {
         console.error("Error during file upload and conversion:", error);

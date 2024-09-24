@@ -1,3 +1,4 @@
+import path from "path";
 import { File } from "./file.model";
 import fs from "fs/promises";
 import mammoth from "mammoth";
@@ -21,7 +22,14 @@ const uploadAndConvertFile = async (
   file: Express.Multer.File
 ): Promise<void> => {
   try {
-    const fileBuffer = await fs.readFile(file.path); // Read the uploaded file
+    // Create a temporary path for the uploaded file in /tmp
+    const tempFilePath = path.join("/tmp", file.originalname);
+
+    // Move the file to the /tmp directory (assuming file.path points to a location accessible)
+    await fs.copyFile(file.path, tempFilePath); // Copy the file to /tmp
+
+    // Read the uploaded file
+    const fileBuffer = await fs.readFile(tempFilePath);
 
     // Convert DOCX to HTML
     const htmlContent = await convertDocxToHtml(fileBuffer);
@@ -48,7 +56,7 @@ const uploadAndConvertFile = async (
     await fileDoc.save(); // Save the document in the DB
 
     // Remove the local file after upload
-    await fs.unlink(file.path);
+    await fs.unlink(tempFilePath); // Clean up the temporary file
   } catch (error) {
     console.error("Error during file upload and conversion:", error);
     throw new Error("Upload and conversion process failed.");

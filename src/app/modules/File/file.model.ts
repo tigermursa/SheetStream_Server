@@ -5,7 +5,7 @@ const fileSchema = new Schema<IFile>({
   imageOne: { type: String },
   imageTwo: { type: String },
   title: { type: String },
-  shortDescription: { type: String },
+  description: { type: String },
   fileName: { type: String, required: true },
   filePath: { type: String, required: true },
   htmlContent: { type: String, required: true },

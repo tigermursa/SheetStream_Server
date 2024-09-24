@@ -2,7 +2,7 @@ export interface IFile {
   imageOne?: string;
   imageTwo?: string;
   title?: string;
-  shortDescription?: string;
+  description?: string;
   fileName: string;
   filePath: string;
   htmlContent?: string;

@@ -58,7 +58,7 @@ const uploadAndConvertFile = async (
 const getAllFiles = async () => {
   try {
     return await File.find().select(
-      "imageOne  title fileName shortDescription  uploadDate isOnline"
+      "imageOne  title fileName  description  uploadDate isOnline"
     );
   } catch (error) {
     console.error("Error retrieving files:", error);
@@ -72,8 +72,8 @@ const updateFileContent = async (
   imageOne?: string,
   imageTwo?: string,
   title?: string,
-  isOnline?: boolean,
-  shortDescription?: string
+  description?: string,
+  isOnline?: boolean
 ) => {
   try {
     const updateFields: Partial<IFile> = { htmlContent };
@@ -81,7 +81,7 @@ const updateFileContent = async (
     if (imageOne) updateFields.imageOne = imageOne;
     if (imageTwo) updateFields.imageTwo = imageTwo;
     if (title) updateFields.title = title;
-    if (shortDescription) updateFields.shortDescription = shortDescription;
+    if (description) updateFields.description = description;
     if (typeof isOnline === "boolean") {
       updateFields.isOnline = isOnline;
     }

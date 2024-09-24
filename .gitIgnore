@@ -1,8 +1,8 @@
-dist
+
 node_modules
 .env
 .eslintignore
 .eslintrc.json
 package-lock.json
-tsconfig.json
-.vercel
+
+

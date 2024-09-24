@@ -18,6 +18,8 @@ const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
 const mammoth_1 = __importDefault(require("mammoth"));
 const mongoose_1 = require("mongoose");
+const cloudinaryConfig_1 = require("../../config/cloudinaryConfig");
+// Function to convert DOCX to HTML
 const convertDocxToHtml = (buffer) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { value: htmlContent } = yield mammoth_1.default.convertToHtml({ buffer });
@@ -29,18 +31,35 @@ const convertDocxToHtml = (buffer) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.convertDocxToHtml = convertDocxToHtml;
+// Function to upload and convert DOCX to HTML
 const uploadAndConvertFile = (file) => __awaiter(void 0, void 0, void 0, function* () {
-    const uploadPath = path_1.default.resolve(__dirname, "../../../../uploads", file.filename);
     try {
-        const fileBuffer = yield promises_1.default.readFile(uploadPath);
+        // Create a temporary path for the uploaded file in /tmp
+        const tempFilePath = path_1.default.join("/tmp", file.originalname);
+        // Move the file to the /tmp directory (assuming file.path points to a location accessible)
+        yield promises_1.default.copyFile(file.path, tempFilePath); // Copy the file to /tmp
+        // Read the uploaded file
+        const fileBuffer = yield promises_1.default.readFile(tempFilePath);
+        // Convert DOCX to HTML
         const htmlContent = yield convertDocxToHtml(fileBuffer);
+        // Upload the file to Cloudinary
+        const cloudinaryResult = yield new Promise((resolve, reject) => {
+            const stream = cloudinaryConfig_1.cloudinaryInstance.uploader.upload_stream({ resource_type: "raw" }, (error, result) => {
+                if (error)
+                    reject(error);
+                resolve(result);
+            });
+            stream.end(fileBuffer);
+        });
+        // Create a new file document
         const fileDoc = new file_model_1.File({
             fileName: file.originalname,
-            filePath: uploadPath,
+            filePath: cloudinaryResult.secure_url,
             htmlContent,
         });
-        yield fileDoc.save();
-        yield promises_1.default.unlink(uploadPath);
+        yield fileDoc.save(); // Save the document in the DB
+        // Remove the local file after upload
+        yield promises_1.default.unlink(tempFilePath); // Clean up the temporary file
     }
     catch (error) {
         console.error("Error during file upload and conversion:", error);

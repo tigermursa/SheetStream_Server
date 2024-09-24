@@ -22,12 +22,13 @@ const uploadFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         if (!file.mimetype.includes("officedocument.wordprocessingml")) {
             return res.status(400).json({ message: "Only DOCX files are allowed" });
         }
-        yield (0, file_services_1.uploadAndConvertFile)(file);
+        yield (0, file_services_1.uploadAndConvertFile)(file); // Perform upload and conversion
         return res
             .status(201)
             .json({ message: "File uploaded and converted successfully!" });
     }
     catch (error) {
+        console.error("Error in uploadFile:", error);
         const errorMessage = error instanceof Error ? error.message : "Unknown error";
         return res.status(500).json({
             message: "Error uploading and converting file",

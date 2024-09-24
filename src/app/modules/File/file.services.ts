@@ -58,7 +58,7 @@ const uploadAndConvertFile = async (
 const getAllFiles = async () => {
   try {
     return await File.find().select(
-      "imageOne  title fileName  description  uploadDate isOnline"
+      "imageOne  title description fileName    uploadDate isOnline"
     );
   } catch (error) {
     console.error("Error retrieving files:", error);

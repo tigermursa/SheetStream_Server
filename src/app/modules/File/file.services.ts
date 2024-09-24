@@ -1,10 +1,9 @@
 import { File } from "./file.model";
 import fs from "fs/promises";
-import path from "path";
 import mammoth from "mammoth";
 import { isValidObjectId } from "mongoose";
 import { IFile } from "./file.Interface";
-import cloudinary from "cloudinary";
+import { cloudinaryInstance } from "../../config/cloudinaryConfig";
 
 // Function to convert DOCX to HTML
 const convertDocxToHtml = async (buffer: Buffer): Promise<string> => {
@@ -17,36 +16,44 @@ const convertDocxToHtml = async (buffer: Buffer): Promise<string> => {
   }
 };
 
-// Function to upload and convert the file
+// Function to upload and convert DOCX to HTML
 const uploadAndConvertFile = async (
   file: Express.Multer.File
 ): Promise<void> => {
   try {
-    const fileBuffer = await fs.readFile(file.path); // Read the uploaded file from multer
+    const fileBuffer = await fs.readFile(file.path); // Read the uploaded file
+
+    // Convert DOCX to HTML
     const htmlContent = await convertDocxToHtml(fileBuffer);
 
     // Upload the file to Cloudinary
-    const cloudinaryResult = await cloudinary.v2.uploader.upload(file.path, {
-      resource_type: "raw", // Use 'raw' for non-image files
+    const cloudinaryResult = await new Promise((resolve, reject) => {
+      const stream = cloudinaryInstance.uploader.upload_stream(
+        { resource_type: "raw" },
+        (error: any, result: unknown) => {
+          if (error) reject(error);
+          resolve(result);
+        }
+      );
+      stream.end(fileBuffer);
     });
 
-    // Create a new File document with the Cloudinary URL and HTML content
+    // Create a new file document
     const fileDoc = new File({
       fileName: file.originalname,
-      filePath: cloudinaryResult.secure_url, // Use the secure URL from Cloudinary
+      filePath: (cloudinaryResult as any).secure_url,
       htmlContent,
     });
 
-    await fileDoc.save();
+    await fileDoc.save(); // Save the document in the DB
 
-    // Delete the local file if needed
+    // Remove the local file after upload
     await fs.unlink(file.path);
   } catch (error) {
     console.error("Error during file upload and conversion:", error);
     throw new Error("Upload and conversion process failed.");
   }
 };
-
 
 const getAllFiles = async () => {
   try {

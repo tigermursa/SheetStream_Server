@@ -13,6 +13,7 @@ exports.searchFilesController = exports.toggleFileStatusController = exports.del
 const file_services_1 = require("./file.services");
 const mongoose_1 = require("mongoose");
 const file_model_1 = require("./file.model");
+//new one
 const uploadFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const file = req.file;
@@ -22,12 +23,13 @@ const uploadFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         if (!file.mimetype.includes("officedocument.wordprocessingml")) {
             return res.status(400).json({ message: "Only DOCX files are allowed" });
         }
-        yield (0, file_services_1.uploadAndConvertFile)(file); // Perform upload and conversion
+        yield (0, file_services_1.uploadAndConvertFile)(file);
         return res
             .status(201)
             .json({ message: "File uploaded and converted successfully!" });
     }
     catch (error) {
+        // More detailed logging
         console.error("Error in uploadFile:", error);
         const errorMessage = error instanceof Error ? error.message : "Unknown error";
         return res.status(500).json({

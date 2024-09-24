@@ -30,23 +30,29 @@ const convertDocxToHtml = (buffer) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.convertDocxToHtml = convertDocxToHtml;
-// Function to upload and convert the file
+// Function to upload and convert DOCX to HTML
 const uploadAndConvertFile = (file) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const fileBuffer = yield promises_1.default.readFile(file.path); // Read the uploaded file from multer
+        const fileBuffer = yield promises_1.default.readFile(file.path); // Read the uploaded file
+        // Convert DOCX to HTML
         const htmlContent = yield convertDocxToHtml(fileBuffer);
         // Upload the file to Cloudinary
-        const cloudinaryResult = yield cloudinaryConfig_1.cloudinaryInstance.v2.uploader.upload(file.path, {
-            resource_type: "raw", // Use 'raw' for non-image files
+        const cloudinaryResult = yield new Promise((resolve, reject) => {
+            const stream = cloudinaryConfig_1.cloudinaryInstance.uploader.upload_stream({ resource_type: "raw" }, (error, result) => {
+                if (error)
+                    reject(error);
+                resolve(result);
+            });
+            stream.end(fileBuffer);
         });
-        // Create a new File document with the Cloudinary URL and HTML content
+        // Create a new file document
         const fileDoc = new file_model_1.File({
             fileName: file.originalname,
-            filePath: cloudinaryResult.secure_url, // Use the secure URL from Cloudinary
+            filePath: cloudinaryResult.secure_url,
             htmlContent,
         });
-        yield fileDoc.save();
-        // Delete the local file if needed
+        yield fileDoc.save(); // Save the document in the DB
+        // Remove the local file after upload
         yield promises_1.default.unlink(file.path);
     }
     catch (error) {

@@ -17,15 +17,17 @@ const uploadFile = async (req: Request, res: Response) => {
     if (!file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
+
     if (!file.mimetype.includes("officedocument.wordprocessingml")) {
       return res.status(400).json({ message: "Only DOCX files are allowed" });
     }
 
-    await uploadAndConvertFile(file);
+    await uploadAndConvertFile(file); // Perform upload and conversion
     return res
       .status(201)
       .json({ message: "File uploaded and converted successfully!" });
   } catch (error) {
+    console.error("Error in uploadFile:", error);
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
     return res.status(500).json({

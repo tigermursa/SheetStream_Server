@@ -4,7 +4,9 @@ import path from "path";
 import mammoth from "mammoth";
 import { isValidObjectId } from "mongoose";
 import { IFile } from "./file.Interface";
+import { cloudinaryInstance } from "../../config/cloudinaryConfig";
 
+// Function to convert DOCX to HTML
 const convertDocxToHtml = async (buffer: Buffer): Promise<string> => {
   try {
     const { value: htmlContent } = await mammoth.convertToHtml({ buffer });
@@ -15,27 +17,46 @@ const convertDocxToHtml = async (buffer: Buffer): Promise<string> => {
   }
 };
 
+// Function to upload and convert DOCX to HTML
 const uploadAndConvertFile = async (
   file: Express.Multer.File
 ): Promise<void> => {
-  const uploadPath = path.resolve(
-    __dirname,
-    "../../../../uploads",
-    file.filename
-  );
-
   try {
-    const fileBuffer = await fs.readFile(uploadPath);
+    // Create a temporary path for the uploaded file in /tmp
+    const tempFilePath = path.join("/tmp", file.originalname);
+
+    // Move the file to the /tmp directory (assuming file.path points to a location accessible)
+    await fs.copyFile(file.path, tempFilePath); // Copy the file to /tmp
+
+    // Read the uploaded file
+    const fileBuffer = await fs.readFile(tempFilePath);
+
+    // Convert DOCX to HTML
     const htmlContent = await convertDocxToHtml(fileBuffer);
 
+    // Upload the file to Cloudinary
+    const cloudinaryResult = await new Promise((resolve, reject) => {
+      const stream = cloudinaryInstance.uploader.upload_stream(
+        { resource_type: "raw" },
+        (error: any, result: unknown) => {
+          if (error) reject(error);
+          resolve(result);
+        }
+      );
+      stream.end(fileBuffer);
+    });
+
+    // Create a new file document
     const fileDoc = new File({
       fileName: file.originalname,
-      filePath: uploadPath,
+      filePath: (cloudinaryResult as any).secure_url,
       htmlContent,
     });
-    await fileDoc.save();
 
-    await fs.unlink(uploadPath);
+    await fileDoc.save(); // Save the document in the DB
+
+    // Remove the local file after upload
+    await fs.unlink(tempFilePath); // Clean up the temporary file
   } catch (error) {
     console.error("Error during file upload and conversion:", error);
     throw new Error("Upload and conversion process failed.");

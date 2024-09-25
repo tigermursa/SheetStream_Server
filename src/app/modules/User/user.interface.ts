@@ -4,6 +4,8 @@ export interface ICountry {
 }
 
 export interface IUser {
+  userImage: any;
+  _id: string;
   userName: string;
   email: string;
   password: string;

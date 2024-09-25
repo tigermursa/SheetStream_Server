@@ -13,16 +13,7 @@ export async function register(
   res: Response,
   next: NextFunction
 ): Promise<Response | void> {
-  const {
-    userName,
-    email,
-    password,
-    confirmPassword,
-    gender,
-    location,
-    age,
-    work,
-  } = req.body;
+  const { userName, email, password, gender, location, age, work } = req.body;
 
   try {
     // Validate input using Zod
@@ -36,11 +27,6 @@ export async function register(
     const validUser = await AuthService.findUserByEmail(email);
     if (validUser) {
       throw new CustomError("User already exists", 400);
-    }
-
-    // Check if passwords match
-    if (password !== confirmPassword) {
-      throw new CustomError("Passwords don't match", 400);
     }
 
     // Hash the password

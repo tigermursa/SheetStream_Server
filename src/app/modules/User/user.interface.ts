@@ -4,12 +4,11 @@ export interface ICountry {
 }
 
 export interface IUser {
-  [x: string]: any;
   userName: string;
   email: string;
   password: string;
-  location: ICountry;
-  work: string;
-  age: number;
-  gender: "male" | "female" | "others";
+  location?: ICountry;
+  work?: string;
+  age?: number;
+  gender?: "male" | "female" | "others";
 }

@@ -1,16 +1,17 @@
+// user.interface.ts
 export interface ICountry {
   countryName: string;
   city: string;
 }
 
 export interface IUser {
-  userImage: any;
+  userImage?: any; // Made userImage optional
   _id: string;
-  userName: string;
-  email: string;
-  password: string;
-  location?: ICountry;
-  work?: string;
-  age?: number;
-  gender?: "male" | "female" | "others";
+  userName: string; // Required
+  email: string; // Required and unique
+  password: string; // Required
+  location?: ICountry; // Optional
+  work?: string; // Optional
+  age?: number; // Optional
+  gender?: "male" | "female" | "others"; // Optional
 }

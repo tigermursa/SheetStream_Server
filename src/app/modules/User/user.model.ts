@@ -3,7 +3,7 @@ import { IUser, ICountry } from "./user.interface";
 
 export type UserModel = Model<IUser>;
 
-// (Location)
+// Location Schema
 const locationSchema: Schema<ICountry> = new Schema({
   countryName: {
     type: String,
@@ -19,10 +19,11 @@ const locationSchema: Schema<ICountry> = new Schema({
 const userSchema: Schema<IUser, UserModel> = new Schema({
   userName: {
     type: String,
-    required: true,
+    required: false,
   },
   email: {
     type: String,
+    unique: true,
     required: true,
   },
   password: {
@@ -31,20 +32,23 @@ const userSchema: Schema<IUser, UserModel> = new Schema({
   },
   location: {
     type: locationSchema,
-    required: true,
+    required: false,
   },
   work: {
     type: String,
-    required: true,
+    required: false,
   },
   age: {
-    type: Number,
-    required: true,
+    type: Number, // Make it optional in the schema
   },
   gender: {
     type: String,
     enum: ["male", "female", "others"],
-    required: true,
+    required: false,
+  },
+  userImage: {
+    type: Schema.Types.Mixed,
+    required: false,
   },
 });
 

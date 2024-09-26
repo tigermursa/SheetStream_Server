@@ -11,10 +11,10 @@ export const countrySchema = z.object({
   city: z.string().min(1, "City is required"),
 });
 
-// Optimized user schema
+// Optimized user schema with optional fields
 export const userSchema = z.object({
-  userName: z.string().min(1, "Username is required"),
-  email: z.string().email("Invalid email format"),
+  userName: z.string().min(1, "Username is required").optional(),
+  email: z.string().email("Invalid email format").min(1, "Email is required"),
   password: z
     .string()
     .min(8, "Password must be at least 8 characters long")
@@ -27,12 +27,15 @@ export const userSchema = z.object({
       passwordSpecialChar,
       "Password must contain at least one special character"
     ),
-  location: countrySchema,
-  work: z.string().min(1, "Work field is required"),
-  age: z.number().int().positive("Age must be a positive integer"),
-  gender: z.enum(["male", "female", "others"], {
-    required_error: "Gender is required",
-  }),
+  location: countrySchema.optional(), // Make location optional
+  work: z.string().min(1, "Work field is required").optional(), // Make work optional
+  age: z.number().int().positive("Age must be a positive integer").optional(), // Make age optional
+  gender: z
+    .enum(["male", "female", "others"], {
+      required_error: "Gender is required",
+    })
+    .optional(), // Make gender optional
+  userImage: z.any().optional(), // Make userImage optional
 });
 
 // Function to validate user data

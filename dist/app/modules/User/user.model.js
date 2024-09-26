@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const mongoose_1 = require("mongoose");
-// (Location)
+// Location Schema
 const locationSchema = new mongoose_1.Schema({
     countryName: {
         type: String,
@@ -17,10 +17,11 @@ const locationSchema = new mongoose_1.Schema({
 const userSchema = new mongoose_1.Schema({
     userName: {
         type: String,
-        required: true,
+        required: false,
     },
     email: {
         type: String,
+        unique: true,
         required: true,
     },
     password: {
@@ -29,20 +30,23 @@ const userSchema = new mongoose_1.Schema({
     },
     location: {
         type: locationSchema,
-        required: true,
+        required: false,
     },
     work: {
         type: String,
-        required: true,
+        required: false,
     },
     age: {
-        type: Number,
-        required: true,
+        type: Number, // Make it optional in the schema
     },
     gender: {
         type: String,
         enum: ["male", "female", "others"],
-        required: true,
+        required: false,
+    },
+    userImage: {
+        type: mongoose_1.Schema.Types.Mixed,
+        required: false,
     },
 });
 exports.User = (0, mongoose_1.model)("User", userSchema);

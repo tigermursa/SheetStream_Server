@@ -21,7 +21,7 @@ const bcryptjs_1 = __importDefault(require("bcryptjs"));
 //Imports Ends _____________________________________________________________
 function register(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { userName, email, password, confirmPassword, gender, location, age, work, } = req.body;
+        const { userName, email, password, gender, location, age, work } = req.body;
         try {
             // Validate input using Zod
             const validationResult = (0, user_zodValidation_1.validateUser)(req.body);
@@ -33,10 +33,6 @@ function register(req, res, next) {
             const validUser = yield auth_services_1.AuthService.findUserByEmail(email);
             if (validUser) {
                 throw new CustomError_1.CustomError("User already exists", 400);
-            }
-            // Check if passwords match
-            if (password !== confirmPassword) {
-                throw new CustomError_1.CustomError("Passwords don't match", 400);
             }
             // Hash the password
             const hashedPassword = bcryptjs_1.default.hashSync(password, 10);

@@ -37,7 +37,7 @@ export async function login(
       .cookie("access_token", token, {
         httpOnly: true,
         secure: false, // Set 'secure' to true in production
-        sameSite: "none",
+        sameSite: "lax",
         maxAge: 1000 * 60 * 60 * 24,
       })
       .status(200)

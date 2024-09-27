@@ -1,8 +1,9 @@
 import express from "express";
-import { getUserById } from "./user.controller";
+import { getUserByToken } from "./user.controller";
 
 const router = express.Router();
 
-router.get("/:id", getUserById);
+// router.get("/:id", getUserById);
+router.get("/me", getUserByToken);
 
 export const UserRoutes = router;

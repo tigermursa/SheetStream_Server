@@ -8,7 +8,7 @@ export async function logout(
   try {
     res.clearCookie("access_token", {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: "none",
     });
     res.status(200).json({

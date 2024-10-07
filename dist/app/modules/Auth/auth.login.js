@@ -38,8 +38,8 @@ function login(req, res, next) {
             res
                 .cookie("access_token", token, {
                 httpOnly: true,
-                secure: true, // Set 'secure' to true in production
-                sameSite: "none",
+                secure: false, // Set 'secure' to true in production
+                sameSite: "lax", // its working but i need some study about the cookis thing again
                 maxAge: 1000 * 60 * 60 * 24,
             })
                 .status(200)

@@ -15,8 +15,8 @@ function logout(req, res, next) {
         try {
             res.clearCookie("access_token", {
                 httpOnly: true,
-                secure: true,
-                sameSite: "none",
+                secure: false,
+                sameSite: "lax",
             });
             res.status(200).json({
                 message: "User has been logged out successfully!",

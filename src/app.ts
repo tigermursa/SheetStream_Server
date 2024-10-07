@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan"; // Logging
 import dotenv from "dotenv"; // Load environment variables
-import cookieParser from 'cookie-parser';
+import cookieParser from "cookie-parser";
 import { FileRoutes } from "./app/modules/File/file.routes";
 import { AuthRoutes } from "./app/modules/Auth/auth.routes";
 import { UserRoutes } from "./app/modules/User/user.routes";
@@ -17,7 +17,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(
   cors({
-    origin:"http://localhost:3000",
+    origin: "https://sheetstream-server.onrender.com",
     credentials: true,
   })
 );
@@ -28,12 +28,11 @@ app.use("/api/v1/files", FileRoutes);
 app.use("/api/v2/auth", AuthRoutes);
 app.use("/api/v3/user", UserRoutes);
 
-
 // Simple health check route
 app.get("/", (req, res) => {
   res.send("The Server is Running");
 });
 
-export default app; 
+export default app;
 
 //so redy to host now

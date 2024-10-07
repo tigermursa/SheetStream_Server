@@ -17,7 +17,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(
   cors({
-    origin: "https://sheetstream-o96de8glp-tigermursas-projects.vercel.app",
+    origin: "https://sheetstream-client.vercel.app",
     credentials: true,
   })
 );

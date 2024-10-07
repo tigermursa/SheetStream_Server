@@ -34,4 +34,6 @@ app.get("/", (req, res) => {
   res.send("The Server is Running");
 });
 
-export default app; // Ensure the app is exported
+export default app; 
+
+//so redy to host now

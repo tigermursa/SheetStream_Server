@@ -11,6 +11,7 @@ async function server() {
 
     app.listen(config.port, () => {
       console.log(`Dear app listening on port ${config.port}`);
+      console.log(`mood id development ${config.dev_frontend}`);
     });
   } catch (error) {
     console.log(error);

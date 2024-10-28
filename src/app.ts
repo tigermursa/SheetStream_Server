@@ -6,7 +6,7 @@ import cookieParser from "cookie-parser";
 import { FileRoutes } from "./app/modules/File/file.routes";
 import { AuthRoutes } from "./app/modules/Auth/auth.routes";
 import { UserRoutes } from "./app/modules/User/user.routes";
-
+import config from "./app/config";
 // Load .env file
 dotenv.config();
 
@@ -17,7 +17,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(
   cors({
-    origin: "https://sheetstream-client.vercel.app",
+    origin: config.dev_frontend,
     credentials: true,
   })
 );

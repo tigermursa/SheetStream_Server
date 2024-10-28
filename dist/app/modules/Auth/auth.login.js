@@ -32,19 +32,12 @@ function login(req, res, next) {
                 throw new CustomError_1.CustomError("Wrong credentials", 401);
             }
             // Generate JWT token with expiration
-            const token = jsonwebtoken_1.default.sign({ id: validUser._id }, process.env.JWT_SECRET, { expiresIn: process.env.EXPIRES_IN } // Token expires in  2d
+            const token = jsonwebtoken_1.default.sign({ id: validUser._id }, process.env.JWT_SECRET, { expiresIn: process.env.EXPIRES_IN } // Token expires in 2d
             );
-            // Set HTTP-only, Secure,
-            res
-                .cookie("access_token", token, {
-                httpOnly: true,
-                secure: false, // Set 'secure' to true in production
-                sameSite: "lax", // its working but i need some study about the cookis thing again
-                maxAge: 1000 * 60 * 60 * 24,
-            })
-                .status(200)
-                .json({
+            // Return the token (do not set the cookie here)
+            res.status(200).json({
                 message: "User logged in successfully!",
+                token,
                 _id: validUser._id,
                 username: validUser.userName,
                 email: validUser.email,

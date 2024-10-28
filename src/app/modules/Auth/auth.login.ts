@@ -1,5 +1,5 @@
+// /src/services/auth/login.ts (backend)
 import { Request, Response, NextFunction } from "express";
-
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { AuthService } from "./auth.services";
@@ -29,25 +29,18 @@ export async function login(
     const token = jwt.sign(
       { id: validUser._id },
       process.env.JWT_SECRET as string,
-      { expiresIn: process.env.EXPIRES_IN } // Token expires in  2d
+      { expiresIn: process.env.EXPIRES_IN } // Token expires in 2d
     );
 
-    // Set HTTP-only, Secure,
-    res
-      .cookie("access_token", token, {
-        httpOnly: true,
-        secure: false, // Set 'secure' to true in production
-        sameSite: "lax", // its working but i need some study about the cookis thing again
-        maxAge: 1000 * 60 * 60 * 24,
-      })
-      .status(200)
-      .json({
-        message: "User logged in successfully!",
-        _id: validUser._id,
-        username: validUser.userName,
-        email: validUser.email,
-        userImage: validUser.userImage,
-      });
+    // Return the token (do not set the cookie here)
+    res.status(200).json({
+      message: "User logged in successfully!",
+      token,
+      _id: validUser._id,
+      username: validUser.userName,
+      email: validUser.email,
+      userImage: validUser.userImage,
+    });
   } catch (error) {
     next(error);
   }

@@ -11,6 +11,7 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const file_routes_1 = require("./app/modules/File/file.routes");
 const auth_routes_1 = require("./app/modules/Auth/auth.routes");
 const user_routes_1 = require("./app/modules/User/user.routes");
+const config_1 = __importDefault(require("./app/config"));
 // Load .env file
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -18,7 +19,7 @@ const app = (0, express_1.default)();
 app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.json());
 app.use((0, cors_1.default)({
-    origin: "https://sheetstream-client.vercel.app",
+    origin: config_1.default.dev_frontend,
     credentials: true,
 }));
 app.use((0, morgan_1.default)("dev")); // Log HTTP requests

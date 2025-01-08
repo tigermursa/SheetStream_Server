@@ -1,5 +1,6 @@
 export interface IFile {
   userID: string;
+  writer: string;
   imageOne?: string;
   imageTwo?: string;
   title?: string;

@@ -13,6 +13,7 @@ import { File } from "./file.model";
 const uploadFile = async (req: Request, res: Response) => {
   try {
     const file = req.file as Express.Multer.File;
+    const { userID, writer } = req.body;
 
     if (!file) {
       return res.status(400).json({ message: "No file uploaded" });
@@ -22,7 +23,15 @@ const uploadFile = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Only DOCX files are allowed" });
     }
 
-    await uploadAndConvertFile(file);
+    if (!userID) {
+      return res.status(400).json({ message: "userID is required" });
+    }
+    if (!writer) {
+      return res.status(400).json({ message: "userID is required" });
+    }
+
+    await uploadAndConvertFile(file, userID, writer); // Pass userID here
+
     return res
       .status(201)
       .json({ message: "File uploaded and converted successfully!" });

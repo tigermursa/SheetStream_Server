@@ -18,7 +18,9 @@ const convertDocxToHtml = async (buffer: Buffer): Promise<string> => {
 
 // Function to upload and convert DOCX to HTML
 const uploadAndConvertFile = async (
-  file: Express.Multer.File
+  file: Express.Multer.File,
+  userID: string,
+  writer: string
 ): Promise<void> => {
   try {
     const fileBuffer = await fs.readFile(file.path); // Read the uploaded file
@@ -40,6 +42,8 @@ const uploadAndConvertFile = async (
 
     // Create a new file document
     const fileDoc = new File({
+      userID,
+      writer,
       fileName: file.originalname,
       filePath: (cloudinaryResult as any).secure_url,
       htmlContent,

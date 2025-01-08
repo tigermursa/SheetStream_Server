@@ -31,7 +31,7 @@ const convertDocxToHtml = (buffer) => __awaiter(void 0, void 0, void 0, function
 });
 exports.convertDocxToHtml = convertDocxToHtml;
 // Function to upload and convert DOCX to HTML
-const uploadAndConvertFile = (file) => __awaiter(void 0, void 0, void 0, function* () {
+const uploadAndConvertFile = (file, userID, writer) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const fileBuffer = yield promises_1.default.readFile(file.path); // Read the uploaded file
         // Convert DOCX to HTML
@@ -47,6 +47,8 @@ const uploadAndConvertFile = (file) => __awaiter(void 0, void 0, void 0, functio
         });
         // Create a new file document
         const fileDoc = new file_model_1.File({
+            userID,
+            writer,
             fileName: file.originalname,
             filePath: cloudinaryResult.secure_url,
             htmlContent,
@@ -63,7 +65,7 @@ const uploadAndConvertFile = (file) => __awaiter(void 0, void 0, void 0, functio
 exports.uploadAndConvertFile = uploadAndConvertFile;
 const getAllFiles = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        return yield file_model_1.File.find().select("imageOne  title description fileName    uploadDate isOnline");
+        return yield file_model_1.File.find().select("imageOne title description fileName uploadDate isOnline");
     }
     catch (error) {
         console.error("Error retrieving files:", error);
@@ -119,12 +121,17 @@ const deleteFile = (fileId) => __awaiter(void 0, void 0, void 0, function* () {
         // Attempt to delete the file from the database
         yield file_model_1.File.findByIdAndDelete(fileId);
         // Check if the file exists before attempting to delete it
-        try {
-            yield promises_1.default.access(file.filePath); // Check if the file exists
-            yield promises_1.default.unlink(file.filePath); // Delete the file
+        if (file.filePath.startsWith("http")) {
+            console.warn("File hosted remotely, skipping local deletion.");
         }
-        catch (err) {
-            console.warn(`File not found on the filesystem: ${file.filePath}`);
+        else {
+            try {
+                yield promises_1.default.access(file.filePath); // Check if the file exists
+                yield promises_1.default.unlink(file.filePath); // Delete the file
+            }
+            catch (err) {
+                console.warn(`File not found on the filesystem: ${file.filePath}`);
+            }
         }
         return { message: "File deleted successfully", success: true };
     }

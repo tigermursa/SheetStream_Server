@@ -3,10 +3,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.File = void 0;
 const mongoose_1 = require("mongoose");
 const fileSchema = new mongoose_1.Schema({
+    userID: { type: String },
+    writer: { type: String },
     imageOne: { type: String },
     imageTwo: { type: String },
-    title: { type: String },
-    description: { type: String },
+    title: { type: String, default: "New file" },
+    description: {
+        type: String,
+        default: "please provide description  from edit option",
+    },
     fileName: { type: String, required: true },
     filePath: { type: String, required: true },
     htmlContent: { type: String, required: true },

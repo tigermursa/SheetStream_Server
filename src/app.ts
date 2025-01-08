@@ -1,12 +1,16 @@
 import express from "express";
 import cors from "cors";
-import morgan from "morgan"; // Logging
 import dotenv from "dotenv"; // Load environment variables
 import cookieParser from "cookie-parser";
+import morgan from "morgan"; // Import Morgan
+import fs from "fs";
+import path from "path";
+
 import { FileRoutes } from "./app/modules/File/file.routes";
 import { AuthRoutes } from "./app/modules/Auth/auth.routes";
 import { UserRoutes } from "./app/modules/User/user.routes";
 import config from "./app/config";
+
 // Load .env file
 dotenv.config();
 
@@ -21,7 +25,16 @@ app.use(
     credentials: true,
   })
 );
-app.use(morgan("dev")); // Log HTTP requests
+
+// Morgan Middleware (for console logging)
+app.use(morgan("dev"));
+
+// Optionally log requests to a file
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, "access.log"),
+  { flags: "a" }
+);
+app.use(morgan("combined", { stream: accessLogStream }));
 
 // Routes
 app.use("/api/v1/files", FileRoutes);
@@ -34,5 +47,3 @@ app.get("/", (req, res) => {
 });
 
 export default app;
-
-//so redy to host now

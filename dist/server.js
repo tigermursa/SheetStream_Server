@@ -22,7 +22,7 @@ function server() {
             console.log("Mongoose connected successfully!");
             app_1.default.listen(config_1.default.port, () => {
                 console.log(`Dear app listening on port ${config_1.default.port}`);
-                console.log(`mood id development ${config_1.default.dev_frontend}`);
+                console.log(`mood is development ${config_1.default.dev_frontend}`);
             });
         }
         catch (error) {

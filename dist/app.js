@@ -5,9 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
-const morgan_1 = __importDefault(require("morgan")); // Logging
 const dotenv_1 = __importDefault(require("dotenv")); // Load environment variables
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const morgan_1 = __importDefault(require("morgan")); // Import Morgan
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 const file_routes_1 = require("./app/modules/File/file.routes");
 const auth_routes_1 = require("./app/modules/Auth/auth.routes");
 const user_routes_1 = require("./app/modules/User/user.routes");
@@ -22,7 +24,11 @@ app.use((0, cors_1.default)({
     origin: config_1.default.dev_frontend,
     credentials: true,
 }));
-app.use((0, morgan_1.default)("dev")); // Log HTTP requests
+// Morgan Middleware (for console logging)
+app.use((0, morgan_1.default)("dev"));
+// Optionally log requests to a file
+const accessLogStream = fs_1.default.createWriteStream(path_1.default.join(__dirname, "access.log"), { flags: "a" });
+app.use((0, morgan_1.default)("combined", { stream: accessLogStream }));
 // Routes
 app.use("/api/v1/files", file_routes_1.FileRoutes);
 app.use("/api/v2/auth", auth_routes_1.AuthRoutes);
@@ -32,4 +38,3 @@ app.get("/", (req, res) => {
     res.send("The Server is Running");
 });
 exports.default = app;
-//so redy to host now

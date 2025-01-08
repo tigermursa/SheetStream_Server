@@ -22,17 +22,15 @@ const uploadFile = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Only DOCX files are allowed" });
     }
 
-    await uploadAndConvertFile(file); // Perform upload and conversion
+    await uploadAndConvertFile(file);
     return res
       .status(201)
       .json({ message: "File uploaded and converted successfully!" });
   } catch (error) {
     console.error("Error in uploadFile:", error);
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
     return res.status(500).json({
       message: "Error uploading and converting file",
-      error: errorMessage,
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
@@ -44,18 +42,19 @@ const getAllFilesController = async (req: Request, res: Response) => {
       .status(200)
       .json({ message: "Files retrieved successfully", data: files });
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
-    return res
-      .status(500)
-      .json({ message: "Error retrieving files", error: errorMessage });
+    console.error("Error in getAllFilesController:", error);
+    return res.status(500).json({
+      message: "Error retrieving files",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 };
 
 const updateFileController = async (req: Request, res: Response) => {
   try {
     const fileId = req.params.id;
-    const { htmlContent, imageOne, imageTwo, title, description } = req.body;
+    const { htmlContent, imageOne, imageTwo, title, description, isOnline } =
+      req.body;
 
     if (!htmlContent) {
       return res.status(400).json({ message: "HTML content is required" });
@@ -67,8 +66,10 @@ const updateFileController = async (req: Request, res: Response) => {
       imageOne,
       imageTwo,
       title,
-      description
+      description,
+      isOnline
     );
+
     if (!updated) {
       return res
         .status(404)
@@ -79,17 +80,22 @@ const updateFileController = async (req: Request, res: Response) => {
       .status(200)
       .json({ message: "File content updated successfully" });
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
-    return res
-      .status(500)
-      .json({ message: "Error updating file content", error: errorMessage });
+    console.error("Error in updateFileController:", error);
+    return res.status(500).json({
+      message: "Error updating file content",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 };
 
 const getFileController = async (req: Request, res: Response) => {
   try {
     const fileId = req.params.id;
+
+    if (!isValidObjectId(fileId)) {
+      return res.status(400).json({ message: "Invalid file ID" });
+    }
+
     const file = await getFileById(fileId);
 
     if (!file) {
@@ -102,17 +108,22 @@ const getFileController = async (req: Request, res: Response) => {
       .status(200)
       .json({ message: "File retrieved successfully", data: file });
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
-    return res
-      .status(500)
-      .json({ message: "Error retrieving file", error: errorMessage });
+    console.error("Error in getFileController:", error);
+    return res.status(500).json({
+      message: "Error retrieving file",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 };
 
 const deleteFileController = async (req: Request, res: Response) => {
   try {
     const fileId = req.params.id;
+
+    if (!isValidObjectId(fileId)) {
+      return res.status(400).json({ message: "Invalid file ID" });
+    }
+
     const result = await deleteFile(fileId);
 
     if (!result.success) {
@@ -121,11 +132,11 @@ const deleteFileController = async (req: Request, res: Response) => {
 
     return res.status(200).json({ message: result.message });
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
-    return res
-      .status(500)
-      .json({ message: "Error deleting file", error: errorMessage });
+    console.error("Error in deleteFileController:", error);
+    return res.status(500).json({
+      message: "Error deleting file",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 };
 
@@ -133,12 +144,10 @@ const toggleFileStatusController = async (req: Request, res: Response) => {
   try {
     const fileId = req.params.id;
 
-    // Validate if file ID is valid
     if (!isValidObjectId(fileId)) {
       return res.status(400).json({ message: "Invalid file ID" });
     }
 
-    // Find the file and toggle its `isOnline` status
     const file = await File.findById(fileId);
 
     if (!file) {
@@ -147,7 +156,6 @@ const toggleFileStatusController = async (req: Request, res: Response) => {
         .json({ message: `No file found with ID: ${fileId}` });
     }
 
-    // Toggle the `isOnline` field
     file.isOnline = !file.isOnline;
     await file.save();
 
@@ -156,25 +164,25 @@ const toggleFileStatusController = async (req: Request, res: Response) => {
       data: { isOnline: file.isOnline },
     });
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
-    return res
-      .status(500)
-      .json({ message: "Error updating file status", error: errorMessage });
+    console.error("Error in toggleFileStatusController:", error);
+    return res.status(500).json({
+      message: "Error updating file status",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 };
 
 const searchFilesController = async (req: Request, res: Response) => {
   try {
-    const searchQuery = req.query.q || ""; // Get search query from URL query parameters
+    const searchQuery = req.query.q || "";
     const files = await searchFilesByTitle(searchQuery as string);
     return res.status(200).json({ message: "Files found", data: files });
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
-    return res
-      .status(500)
-      .json({ message: "Error searching files", error: errorMessage });
+    console.error("Error in searchFilesController:", error);
+    return res.status(500).json({
+      message: "Error searching files",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 };
 

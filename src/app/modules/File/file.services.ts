@@ -58,7 +58,7 @@ const uploadAndConvertFile = async (
 const getAllFiles = async () => {
   try {
     return await File.find().select(
-      "imageOne  title description fileName    uploadDate isOnline"
+      "imageOne title description fileName uploadDate isOnline"
     );
   } catch (error) {
     console.error("Error retrieving files:", error);
@@ -122,11 +122,15 @@ const deleteFile = async (fileId: string) => {
     await File.findByIdAndDelete(fileId);
 
     // Check if the file exists before attempting to delete it
-    try {
-      await fs.access(file.filePath); // Check if the file exists
-      await fs.unlink(file.filePath); // Delete the file
-    } catch (err) {
-      console.warn(`File not found on the filesystem: ${file.filePath}`);
+    if (file.filePath.startsWith("http")) {
+      console.warn("File hosted remotely, skipping local deletion.");
+    } else {
+      try {
+        await fs.access(file.filePath); // Check if the file exists
+        await fs.unlink(file.filePath); // Delete the file
+      } catch (err) {
+        console.warn(`File not found on the filesystem: ${file.filePath}`);
+      }
     }
 
     return { message: "File deleted successfully", success: true };

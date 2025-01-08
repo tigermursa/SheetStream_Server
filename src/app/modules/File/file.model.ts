@@ -2,10 +2,14 @@ import { Schema, model } from "mongoose";
 import { IFile } from "./file.Interface";
 
 const fileSchema = new Schema<IFile>({
+  userID: { type: String, required: true },
   imageOne: { type: String },
   imageTwo: { type: String },
-  title: { type: String },
-  description: { type: String },
+  title: { type: String, default: "New file" },
+  description: {
+    type: String,
+    default: "please provide description  from edit option",
+  },
   fileName: { type: String, required: true },
   filePath: { type: String, required: true },
   htmlContent: { type: String, required: true },
